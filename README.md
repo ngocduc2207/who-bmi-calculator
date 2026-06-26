@@ -44,6 +44,7 @@ Chart interactions:
 - **Scroll** to zoom in/out (cursor-anchored)
 - **Drag** to pan
 - **Hover** anywhere to read exact value, z-score and percentile at that point
+- **🔒 / 🔓** lock button (top-right of each chart) — locked by default; when locked, touch events pass through to the page so scrolling works normally on mobile; tap to unlock and enable touch pan/pinch-zoom on that chart
 - **+ / − / ⟲** buttons to zoom and reset
 - **Patient marker** (blue dot + dashed crosshair) shows where the current measurement sits on each curve
 

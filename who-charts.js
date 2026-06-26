@@ -191,10 +191,11 @@ function buildWhoChart(canvas, indicator, view, getState) {
   canvas.addEventListener("wheel", function (e) { e.preventDefault(); var p = pxOf(e); zoomAt(p.x, p.y, e.deltaY < 0 ? 0.85 : 1 / 0.85); }, { passive: false });
 
   // ---- touch: single-finger pan + two-finger pinch-zoom ----
-  var tch = null;
+  var tch = null, locked = true;
   function touchDist(t1, t2) { var dx = t1.clientX - t2.clientX, dy = t1.clientY - t2.clientY; return Math.sqrt(dx * dx + dy * dy); }
   function touchMid(t1, t2, rect, sc) { return { x: ((t1.clientX + t2.clientX) / 2 - rect.left) * sc, y: ((t1.clientY + t2.clientY) / 2 - rect.top) * sc }; }
   canvas.addEventListener("touchstart", function (e) {
+    if (locked) return;
     e.preventDefault();
     var rect = canvas.getBoundingClientRect(), sc = cssW / rect.width;
     if (e.touches.length === 1) {
@@ -206,6 +207,7 @@ function buildWhoChart(canvas, indicator, view, getState) {
     hover = null; tip.style.display = "none";
   }, { passive: false });
   canvas.addEventListener("touchmove", function (e) {
+    if (locked) return;
     e.preventDefault();
     if (!tch) return;
     var rect = canvas.getBoundingClientRect(), sc = cssW / rect.width;
@@ -223,6 +225,7 @@ function buildWhoChart(canvas, indicator, view, getState) {
     }
   }, { passive: false });
   canvas.addEventListener("touchend", function (e) {
+    if (locked) return;
     e.preventDefault();
     if (e.touches.length === 0) { tch = null; }
     else if (e.touches.length === 1 && tch && tch.mode === "pinch") {
@@ -249,6 +252,20 @@ function buildWhoChart(canvas, indicator, view, getState) {
   // zoom buttons
   var card = canvas.parentElement; var ctr = document.createElement("div"); ctr.className = "zoom-ctrl";
   function mk(t, title, fn) { var b = document.createElement("button"); b.type = "button"; b.textContent = t; b.title = title; b.addEventListener("click", fn); ctr.appendChild(b); }
+
+  // lock button — default locked, disables touch pan/zoom so page scrolls freely
+  var lockBtn = document.createElement("button"); lockBtn.type = "button";
+  function applyLock() {
+    lockBtn.textContent = locked ? "🔒" : "🔓";
+    lockBtn.title = locked ? "Unlock to pan/zoom by touch" : "Lock chart (re-enable page scroll)";
+    lockBtn.classList.toggle("lk-on", locked);
+    canvas.style.touchAction = locked ? "pan-y" : "none";
+    if (locked) tch = null;
+  }
+  lockBtn.addEventListener("click", function () { locked = !locked; applyLock(); });
+  ctr.appendChild(lockBtn);
+  applyLock();
+
   mk("+", "Zoom in", function () { zoomAt(plot.left + plot.width / 2, plot.top + plot.height / 2, 0.8); });
   mk("−", "Zoom out", function () { zoomAt(plot.left + plot.width / 2, plot.top + plot.height / 2, 1 / 0.8); });
   mk("⟲", "Reset", resetView);

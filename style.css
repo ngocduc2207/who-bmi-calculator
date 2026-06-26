@@ -1,0 +1,140 @@
+:root {
+  --bg: #eef1f5; --card: #ffffff; --ink: #1c2733; --muted: #5b6b7d;
+  --line: #d7dee7; --accent: #1565c0; --ok: #2e7d32; --watch: #f2a000; --warn: #e23b3b;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg); color: var(--ink); padding: 22px 18px 60px; }
+
+.app-header { max-width: 1240px; margin: 0 auto 16px; }
+.app-header h1 { margin: 0 0 4px; font-size: 1.6rem; }
+.subtitle { margin: 0; color: var(--muted); font-size: 0.92rem; max-width: 820px; line-height: 1.5; }
+
+.panel { max-width: 1240px; margin: 0 auto 16px; background: var(--card); border: 1px solid var(--line);
+  border-radius: 14px; padding: 16px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); overflow: hidden; }
+
+/* ---- Laptop (1024px+): comfortable two-column form ---- */
+@media (min-width: 1024px) {
+  .grid-form { grid-template-columns: repeat(4, 1fr); }
+}
+
+.mode-row { margin-bottom: 12px; }
+.switch-label { display: inline-flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--muted); font-weight: 600; }
+.switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; inset: 0; background: #c2ccd6; border-radius: 24px; transition: .15s; }
+.slider::before { content: ""; position: absolute; height: 18px; width: 18px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: .15s; }
+.switch input:checked + .slider { background: var(--accent); }
+.switch input:checked + .slider::before { transform: translateX(20px); }
+
+.grid-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px 16px; }
+/* field-pair: on desktop each pair is a 2-col subgrid inside one grid row slot */
+.field-pair { display: contents; }
+/* on desktop, pair items flow naturally into the auto-fill columns */
+.field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.field label { font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); }
+.field input, .field select { background: #fff; border: 1px solid var(--line); color: var(--ink); border-radius: 8px; padding: 8px 10px; font-size: 0.95rem; width: 100%; min-width: 0; }
+.field input:focus, .field select:focus { outline: 2px solid var(--accent); border-color: transparent; }
+.field input[readonly], .field input:disabled { background: #eef1f5; color: var(--muted); cursor: default; }
+.u { text-transform: none; color: var(--muted); }
+
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button { flex: 1; border: 0; background: #fff; color: var(--ink); padding: 8px 10px; font-size: 0.9rem; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button.on { background: var(--accent); color: #fff; font-weight: 600; }
+.seg.disabled { opacity: .5; }
+.seg button:disabled { cursor: not-allowed; }
+
+.computed { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 0.95rem; }
+.computed b { color: var(--accent); }
+.warn { color: var(--warn); }
+.btn-row { margin-top: 12px; display: flex; gap: 10px; }
+.btn { border: 1px solid var(--accent); background: var(--accent); color: #fff; border-radius: 9px; padding: 8px 16px; font-size: 0.92rem; cursor: pointer; }
+.btn.ghost { background: #fff; color: var(--accent); }
+
+.results { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.results th, .results td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); }
+.results th { font-size: 0.74rem; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); }
+.results td small { color: var(--muted); }
+.zbox { display: inline-block; padding: 2px 8px; border-radius: 6px; font-weight: 700; color: #fff; }
+.zbox.z-ok { background: var(--ok); } .zbox.z-watch { background: var(--watch); } .zbox.z-warn { background: var(--warn); }
+.zbox.flag { background: #6a1b9a; }
+.na { color: var(--muted); font-style: italic; }
+.ind-short { display: none; }
+.extras { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 0.92rem; color: var(--muted); }
+.extras b { color: var(--ink); }
+
+.charts { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.results-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.chart-card { position: relative; margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 10px 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.chart-card figcaption { font-weight: 700; font-size: 0.92rem; margin: 2px 4px 8px; }
+.who-chart { width: 100%; height: auto; display: block; background: #fff; border-radius: 8px; cursor: crosshair; touch-action: none; }
+
+.zoom-ctrl { position: absolute; top: 8px; right: 8px; display: flex; gap: 5px; }
+.zoom-ctrl button { width: 26px; height: 26px; border-radius: 7px; border: 1px solid var(--line); background: #fff; color: var(--ink); font-size: 1rem; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.zoom-ctrl button:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.who-tip { position: fixed; z-index: 50; pointer-events: none; background: rgba(20,28,38,0.96); color: #fff; font-size: 0.8rem; line-height: 1.45; border-radius: 8px; padding: 7px 10px; box-shadow: 0 8px 22px rgba(0,0,0,0.35); }
+.who-tip b { font-size: 0.85rem; }
+
+.footnote { max-width: 1240px; margin: 16px auto 0; color: var(--muted); font-size: 0.8rem; line-height: 1.5; }
+
+/* ================================================================
+   RESPONSIVE — tablet portrait (≤ 820px): single-column charts
+   ================================================================ */
+@media (max-width: 820px) {
+  .charts { grid-template-columns: 1fr; }
+}
+
+/* ================================================================
+   RESPONSIVE — iPhone / small mobile (≤ 540px)
+   ================================================================ */
+/* ================================================================
+   RESPONSIVE — iPhone / small mobile (≤ 540px)
+   ================================================================ */
+/* ================================================================
+   RESPONSIVE — iPhone / small mobile (≤ 540px)
+   ================================================================ */
+@media (max-width: 540px) {
+  body { padding: 10px 10px 48px; }
+
+  .app-header { margin-bottom: 10px; }
+  .app-header h1 { font-size: 1.2rem; }
+  .subtitle { font-size: 0.82rem; }
+
+  .panel { padding: 12px 12px; border-radius: 10px; margin-bottom: 10px; }
+
+  /* Single-column form — minmax(0,..) lets tracks shrink (prevents date-input blowout) */
+  .grid-form { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+
+  /* Pair dates, pair readonly ages, pair weight+length side by side */
+  .field-pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+
+  /* Segs fill full width */
+  .seg { display: flex; width: 100%; }
+  .seg button { flex: 1; padding: 10px 8px; font-size: 0.9rem; }
+
+  .field input, .field select { padding: 9px 8px; font-size: 0.92rem; }
+  .field label { font-size: 0.7rem; }
+
+  .switch-label { font-size: 0.8rem; gap: 8px; }
+  .computed { font-size: 0.84rem; gap: 6px 14px; }
+  .btn { padding: 9px 14px; font-size: 0.88rem; }
+  .btn-row { gap: 8px; }
+
+  /* Results table: short indicator labels so it fits without scroll */
+  .ind-full { display: none; }
+  .ind-short { display: inline; }
+  .results { font-size: 0.82rem; }
+  .results th, .results td { padding: 7px 6px; }
+  .results th { font-size: 0.68rem; }
+  .zbox { padding: 2px 5px; font-size: 0.78rem; }
+
+  .extras { font-size: 0.82rem; gap: 6px 14px; }
+
+  .charts { gap: 10px; }
+  .chart-card { padding: 8px 8px 4px; border-radius: 8px; }
+  .chart-card figcaption { font-size: 0.82rem; margin-bottom: 5px; }
+  .zoom-ctrl button { width: 24px; height: 24px; font-size: 0.9rem; }
+  .footnote { font-size: 0.74rem; padding: 0 2px; }
+}

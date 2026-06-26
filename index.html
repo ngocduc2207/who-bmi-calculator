@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WHO Growth Calculator — z-scores &amp; percentiles</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1>WHO Growth Calculator</h1>
+    <p class="subtitle">
+      Anthropometric z-scores &amp; percentiles using the WHO Child Growth Standards (0–5y)
+      and the WHO Reference 2007 (5–19y). Enter a measurement to get 4 indicators and 8 charts.
+    </p>
+  </header>
+
+  <section class="panel form-panel">
+    <div class="row mode-row">
+      <label class="switch-label">Date entry
+        <span class="switch"><input type="checkbox" id="ageMode"><span class="slider"></span></span>
+        Direct age</label>
+    </div>
+
+    <div class="grid-form">
+      <!-- Paired: dates side by side -->
+      <div class="field-pair">
+        <div class="field"><label>Date of birth</label><input type="date" id="dob"></div>
+        <div class="field"><label>Date of measurement</label><input type="date" id="meas"></div>
+      </div>
+      <!-- Paired: read-only age side by side -->
+      <div class="field-pair">
+        <div class="field"><label>Age — years</label><input type="number" id="ageY" min="0" max="19" step="1" value="5" readonly></div>
+        <div class="field"><label>Age — months</label><input type="number" id="ageM" min="0" max="11" step="1" value="11" readonly></div>
+      </div>
+
+      <div class="field"><label>Sex</label>
+        <div class="seg" id="sexSeg">
+          <button type="button" data-sex="boys">Male</button>
+          <button type="button" data-sex="girls" class="on">Female</button>
+        </div>
+      </div>
+      <div class="field"><label>Units</label>
+        <select id="units"><option value="metric">cm / kg</option><option value="imperial">in / lb</option></select>
+      </div>
+
+      <!-- Paired: weight + length side by side -->
+      <div class="field-pair">
+        <div class="field"><label>Weight <span class="u" data-u="kg">(kg)</span></label><input type="number" id="weight" min="0" step="0.01" placeholder="kg"></div>
+        <div class="field"><label>Length / height <span class="u" data-u="cm">(cm)</span></label><input type="number" id="lenht" min="0" step="0.1" placeholder="cm"></div>
+      </div>
+
+      <div class="field"><label>Measured position</label>
+        <div class="seg" id="posSeg">
+          <button type="button" data-pos="lying">Recumbent</button>
+          <button type="button" data-pos="standing" class="on">Standing</button>
+        </div>
+      </div>
+      <div class="field"><label>Oedema</label>
+        <div class="seg" id="oedSeg">
+          <button type="button" data-oed="no" class="on">No</button>
+          <button type="button" data-oed="yes">Yes</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="computed" id="computed"></div>
+    <div class="btn-row">
+      <button type="button" id="newBtn" class="btn">New data</button>
+      <button type="button" id="resetBtn" class="btn ghost">Reset</button>
+    </div>
+  </section>
+
+  <section class="panel results-panel">
+    <div class="results-scroll">
+      <table class="results" id="results">
+        <thead><tr>
+          <th>Indicator</th>
+          <th>Measure</th>
+          <th><span class="ind-full">z-score (SD)</span><span class="ind-short">z (SD)</span></th>
+          <th><span class="ind-full">Percentile</span><span class="ind-short">Pct</span></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="extras" id="extras"></div>
+  </section>
+
+  <main class="charts" id="charts"></main>
+
+  <p class="footnote">Reference: WHO Child Growth Standards (birth–60 months) &amp; WHO Reference 2007 (61 months–19 years).
+    Scroll to zoom · drag to pan · hover to read any point · ⟲ resets. The 60/61-month join is a real reference boundary.</p>
+
+  <script src="who-wfa.js"></script>
+  <script src="who-lhfa.js"></script>
+  <script src="who-bfa.js"></script>
+  <script src="who-wfl.js"></script>
+  <script src="who-wfh.js"></script>
+  <script src="who-lms.js"></script>
+  <script src="indicator-meta.js"></script>
+  <script src="who-calc.js"></script>
+  <script src="who-charts.js"></script>
+  <script src="who-app.js"></script>
+</body>
+</html>

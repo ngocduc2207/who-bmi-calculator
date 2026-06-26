@@ -190,6 +190,47 @@ function buildWhoChart(canvas, indicator, view, getState) {
   window.addEventListener("mouseup", function () { if (pan) { pan = null; canvas.style.cursor = "crosshair"; } });
   canvas.addEventListener("wheel", function (e) { e.preventDefault(); var p = pxOf(e); zoomAt(p.x, p.y, e.deltaY < 0 ? 0.85 : 1 / 0.85); }, { passive: false });
 
+  // ---- touch: single-finger pan + two-finger pinch-zoom ----
+  var tch = null;
+  function touchDist(t1, t2) { var dx = t1.clientX - t2.clientX, dy = t1.clientY - t2.clientY; return Math.sqrt(dx * dx + dy * dy); }
+  function touchMid(t1, t2, rect, sc) { return { x: ((t1.clientX + t2.clientX) / 2 - rect.left) * sc, y: ((t1.clientY + t2.clientY) / 2 - rect.top) * sc }; }
+  canvas.addEventListener("touchstart", function (e) {
+    e.preventDefault();
+    var rect = canvas.getBoundingClientRect(), sc = cssW / rect.width;
+    if (e.touches.length === 1) {
+      tch = { mode: "pan", cx: e.touches[0].clientX, cy: e.touches[0].clientY, sc: sc };
+    } else if (e.touches.length >= 2) {
+      var mid = touchMid(e.touches[0], e.touches[1], rect, sc);
+      tch = { mode: "pinch", dist: touchDist(e.touches[0], e.touches[1]), mx: mid.x, my: mid.y };
+    }
+    hover = null; tip.style.display = "none";
+  }, { passive: false });
+  canvas.addEventListener("touchmove", function (e) {
+    e.preventDefault();
+    if (!tch) return;
+    var rect = canvas.getBoundingClientRect(), sc = cssW / rect.width;
+    if (e.touches.length >= 2 && tch.mode === "pinch") {
+      var d = touchDist(e.touches[0], e.touches[1]);
+      var mid = touchMid(e.touches[0], e.touches[1], rect, sc);
+      zoomAt(tch.mx, tch.my, tch.dist / d);
+      tch.dist = d; tch.mx = mid.x; tch.my = mid.y;
+    } else if (e.touches.length === 1 && tch.mode === "pan") {
+      var dx = (e.touches[0].clientX - tch.cx) * tch.sc / plot.width * (vw.xMax - vw.xMin);
+      var dy = (e.touches[0].clientY - tch.cy) * tch.sc / plot.height * (vw.yMax - vw.yMin);
+      vw.xMin -= dx; vw.xMax -= dx; vw.yMin += dy; vw.yMax += dy;
+      clampView(); draw();
+      tch.cx = e.touches[0].clientX; tch.cy = e.touches[0].clientY;
+    }
+  }, { passive: false });
+  canvas.addEventListener("touchend", function (e) {
+    e.preventDefault();
+    if (e.touches.length === 0) { tch = null; }
+    else if (e.touches.length === 1 && tch && tch.mode === "pinch") {
+      var rect = canvas.getBoundingClientRect(), sc = cssW / rect.width;
+      tch = { mode: "pan", cx: e.touches[0].clientX, cy: e.touches[0].clientY, sc: sc };
+    }
+  }, { passive: false });
+
   canvas.addEventListener("mousemove", function (e) {
     if (pan) return;
     var p = pxOf(e); if (!inside(p.x, p.y)) { hover = null; tip.style.display = "none"; draw(); return; }

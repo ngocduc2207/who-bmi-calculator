@@ -103,6 +103,19 @@ function buildWhoChart(canvas, indicator, view, getState) {
   }
   function resetView() { vw = { xMin: view0.xMin, xMax: view0.xMax, yMin: view0.yMin, yMax: view0.yMax }; draw(); }
 
+  // interpolated y-value of a reference line at an arbitrary x, or null
+  function lineYAt(ln, xTarget) {
+    var xs = cache.xs, first = -1, last = -1;
+    for (var i = 0; i < xs.length; i++) if (ln.ys[i] != null) { if (first < 0) first = i; last = i; }
+    if (first < 0) return null;
+    var xt = clamp(xTarget, xs[first], xs[last]);
+    for (var j = first; j < last; j++) {
+      if (ln.ys[j] != null && ln.ys[j + 1] != null && xt >= xs[j] && xt <= xs[j + 1])
+        return lerp(ln.ys[j], ln.ys[j + 1], (xt - xs[j]) / (xs[j + 1] - xs[j]));
+    }
+    return ln.ys[last];
+  }
+
   // patient marker {x, y, z, pct, label} or null
   function markerData() {
     var st = getState(); if (!st.result) return null;
@@ -148,12 +161,12 @@ function buildWhoChart(canvas, indicator, view, getState) {
     }
     ctx.restore();
 
-    // curve end-labels
+    // curve end-labels — anchored to each line's value at the right edge of the current view
     ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.font = "10px -apple-system,Segoe UI,Roboto,sans-serif";
     cache.lines.forEach(function (ln) {
-      var last = null; for (var i = cache.xs.length - 1; i >= 0; i--) { if (ln.ys[i] != null) { last = i; break; } }
-      if (last == null) return;
-      var y = yToPx(ln.ys[last]); if (y < plot.top - 2 || y > plot.bottom + 2) return;
+      var yv = lineYAt(ln, vw.xMax);
+      if (yv == null) return;
+      var y = yToPx(yv); if (y < plot.top - 2 || y > plot.bottom + 2) return;
       ctx.fillStyle = ln.style.color; ctx.fillText(ln.style.label, plot.right + 3, y);
     });
 
